@@ -26,7 +26,7 @@ app.get("/api/hello", function (req, res) {
 
 // This defines the first API endpoint for the application.
 // It listens for GET requests to the /api/:date route, where :date is an optional parameter.
-app.get("/api/:date?", function (req, res) {
+app.get("/api/:date?", function(req, res) {
 
   // Get the value of the :date parameter from the request object.
   let dateStr = req.params.date;
@@ -38,9 +38,15 @@ app.get("/api/:date?", function (req, res) {
   if (!dateStr) {
     date = new Date();
   } else {
-    // If a :date parameter is provided, attempt to parse it.
-    // If the date string is invalid, return an error.
-    date = new Date(dateStr);
+    // If the :date parameter is a Unix timestamp, convert it to a Date object.
+    if (/^\d+$/.test(dateStr)) {
+      date = new Date(parseInt(dateStr));
+    } else {
+      // If the :date parameter is a date string, attempt to parse it.
+      date = new Date(dateStr);
+    }
+
+    // Check if the date object is invalid.
     if (isNaN(date.getTime())) {
       return res.json({ error: "Invalid Date" });
     }
